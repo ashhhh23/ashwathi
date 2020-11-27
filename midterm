@@ -1,0 +1,355 @@
+ #include<p18f4550.inc>
+
+loop_cnt1	set 0x00
+loop_cnt2	set 0x01
+
+
+		org 0x00
+		goto start
+		org 0x08
+		retfie
+		org 0x18
+		retfie
+
+;..................................................
+;delay 10ms
+
+dup_nop		macro	kk
+			variable i
+
+i=0
+			while i<kk
+			nop
+
+i+=1
+			endw
+			endm
+
+
+Delay		movlw D'20' ;
+			movwf loop_cnt2,A ;20mhz
+again1		movlw D'250'
+			movwf loop_cnt1, A
+again2		dup_nop D'17'
+			decfsz loop_cnt1, F, A
+			bra again2
+			decfsz loop_cnt2, F, A
+			bra again1
+			nop
+			return
+;.................................................
+;configure LCD (i/O)
+  
+
+command		BCF		PORTC, 4, A	 ;input 
+			BCF		PORTC, 5, A	
+			BSF		PORTC, 6, A	
+			call	Delay
+			BCF		PORTC, 6, A
+			return
+		
+DataR		BSF		PORTC, 4, A	 ;output
+			BCF		PORTC, 5, A
+			BSF		PORTC, 6, A
+			CALL	Delay
+			BCF		PORTC, 6, A
+			return
+;................................................................
+;show name 
+		
+Name						MOVLW	D'65'            ;A
+							MOVWF 	PORTD, A
+							CALL  	DataR	
+						
+							MOVLW 	D'83'            ;S
+							MOVWF 	PORTD, A    
+							CALL 	DataR
+							
+							MOVLW 	D'72'            ;H
+							MOVWF 	PORTD, A
+							CALL  	DataR
+
+							MOVLW 	D'87'            ;W
+							MOVWF 	PORTD, A
+							CALL 	DataR
+
+							MOVLW 	D'65'            ;A
+							MOVWF 	PORTD, A
+							CALL 	DataR	
+							
+							MOVLW 	D'84'            ;T
+							MOVWF 	PORTD, A
+							CALL 	DataR
+						
+							MOVLW 	D'72'            ;H
+							MOVWF 	PORTD, A
+							CALL 	DataR
+							
+							MOVLW 	D'73'            ;I
+							MOVWF 	PORTD, A
+							CALL 	DataR
+							
+							MOVLW	0X01
+							MOVWF	PORTD, A
+							CALL	command	
+
+							BRA		check1
+							
+;..................................................................................
+;showID
+	
+IDnum						MOVLW	D'68'       ;D
+							MOVWF	PORTD, A
+							CALL	DataR
+
+							MOVLW	D'69'       ;E
+							MOVWF	PORTD, A
+							CALL	DataR
+
+							MOVLW	D'57'       ;9
+							MOVWF	PORTD, A
+							CALL	DataR
+				
+							MOVLW	D'55'       ;7
+							MOVWF	PORTD, A
+							CALL	DataR
+				
+							MOVLW	D'51'       ;3
+							MOVWF	PORTD, A
+							CALL	DataR
+					
+							MOVLW	D'48'	    ;0
+							MOVWF	PORTD, A
+							CALL	DataR
+
+							
+							MOVLW	D'48'	    ;0
+							MOVWF	PORTD, A
+							CALL	DataR
+									
+							MOVLW	0x01
+							MOVWF	PORTD, A
+							CALL	command
+
+							BRA 	check2
+		
+;................................................................................................
+;keypad subroutine 
+						
+show1					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'49'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show2					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'50'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show3					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'51'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show4					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'52'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+											
+show5					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'53'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1	
+						
+show6    				MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'54'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show7					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'55'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show8    				MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'56'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+show9					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'57'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+						
+showS					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'42'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1
+									
+show0   				MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'48'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						BRA 	check1						
+						
+show#					MOVLW 	0XC0
+						MOVWF 	PORTD, A
+						CALL 	command
+						MOVLW 	D'35'
+						MOVWF 	PORTD, A
+						CALL 	DataR
+						
+						BRA 	check1						
+						
+..................................................................................................
+;main program
+
+start		CLRF	TRISC, A
+			CLRF	TRISD, A
+			SETF	TRISB, A
+			BCF		TRISB, 4, A
+			BCF		TRISB, 5, A
+			BCF		TRISB, 6, A
+			BCF		TRISB, 7, A
+			SETF	TRISA, A
+			
+			MOVLW	0X38		
+			MOVWF	PORTD, A	;CONF I/O
+			CALL	command
+			
+			MOVLW	0X0E
+			MOVWF	PORTD, A	;display on
+			CALL	command
+			
+			MOVLW	0X01
+			MOVWF	PORTD, A	; clear display
+			CALL	command
+			
+			MOVLW	0X80
+			MOVWF	PORTD, A	; force cursor start line 1
+			CALL	command			
+						
+check1		BTFSC	PORTB, 0, A
+			BRA		Name
+			CLRF	PORTD, A
+
+check2		BTFSC	PORTB,1, A
+			BRA		IDnum
+			CLRF	PORTD, A
+			
+Num1		CLRF	PORTB, A
+			BSF		PORTB, 4, A
+			BTFSC	PORTA, 4, A
+			BRA		show1
+			CLRF	PORTD, A
+			
+Num2		CLRF	PORTB, A
+			BSF		PORTB, 4, A
+			BTFSC	PORTB, 2, A
+			BRA		show2
+			CLRF	PORTD, A
+			
+Num3		CLRF	PORTB, A
+			BSF		PORTB, 4, A
+			BTFSC	PORTB, 3, A
+			BRA		show3
+			CLRF	PORTD, A
+ 
+Num4		CLRF	PORTB, A
+			BSF		PORTB, 5, A
+			BTFSC	PORTB, 4, A
+			BRA		show4
+			CLRF	PORTD, A
+			
+Num5		CLRF	PORTB, A
+			BSF		PORTB, 5, A
+			BTFSC	PORTB, 2, A
+			BRA		show5
+			CLRF	PORTD, A
+						
+Num6		CLRF	PORTB, A
+			BSF		PORTB, 5, A
+			BTFSC	PORTB, 3, A
+			BRA		show6
+			CLRF	PORTD, A
+			
+Num7		CLRF	PORTB, A
+			BSF		PORTB, 6, A
+			BTFSC	PORTB, 4, A
+			BRA		show7
+			CLRF	PORTD, A
+						
+Num8		CLRF	PORTB, A
+			BSF		PORTB, 6, A
+			BTFSC	PORTB, 2, A
+			BRA		show8
+			CLRF	PORTD, A
+			
+Num9		CLRF	PORTB, A
+			BSF		PORTB, 6, A
+			BTFSC	PORTB, 3, A
+			BRA		show9
+			CLRF	PORTD, A
+						
+NumS		CLRF	PORTB, A
+			BSF		PORTB, 7, A
+			BTFSC	PORTB, 4, A
+			BRA		showS
+			CLRF	PORTD, A
+			
+Num0		CLRF	PORTB, A
+			BSF		PORTB, 7, A
+			BTFSC	PORTB, 2, A
+			BRA		show0
+			CLRF	PORTD, A
+			
+Num#		CLRF	PORTB, A
+			BSF		PORTB, 7, A
+			BTFSC	PORTB, 3, A
+			BRA		show#
+			CLRF	PORTD, A			
+				
+			
+;testPB1  	btfsc 	PORTC, 4, A		
+;			bra 	Name
+;			bcf		PORTD, A    
+
+;testPB2 	btfsc	PORTC, 5, A	
+;			bra 	IDnum
+;			bcf		PORTD, A
+;			bra		testPB1	
+			
+			NOP
+			END 
